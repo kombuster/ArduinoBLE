@@ -26,7 +26,8 @@ enum BLEProperty {
   BLEWriteWithoutResponse = 0x04,
   BLEWrite                = 0x08,
   BLENotify               = 0x10,
-  BLEIndicate             = 0x20
+  BLEIndicate             = 0x20,
+  BLEAutoSubscribe        = 0x40
 };
 
 #endif

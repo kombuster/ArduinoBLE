@@ -43,8 +43,11 @@ BLELocalCharacteristic::BLELocalCharacteristic(const char* uuid, uint8_t propert
   memset(_eventHandlers, 0x00, sizeof(_eventHandlers));
 
   if (properties & (BLENotify | BLEIndicate)) {
+    if (properties & BLEAutoSubscribe) {
+      _cccdValue = 0x0001;
+    }
     BLELocalDescriptor* cccd = new BLELocalDescriptor("2902", (uint8_t*)&_cccdValue, sizeof(_cccdValue));
-  
+
     _descriptors.add(cccd);
   }
 
@@ -227,6 +230,11 @@ void BLELocalCharacteristic::writeValue(BLEDevice device, const uint8_t value[],
 
 void BLELocalCharacteristic::writeCccdValue(BLEDevice device, uint16_t value)
 {
+  if (_properties & BLEAutoSubscribe) {
+    value |= 0x0001;
+  }
+  
+  
   value &= 0x0003;
 
   if (_cccdValue != value) {
