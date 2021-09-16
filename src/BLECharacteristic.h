@@ -87,7 +87,7 @@ public:
   bool written();
   bool subscribed();
   bool valueUpdated();
-
+  void notify();
   void addDescriptor(BLEDescriptor& descriptor);
 
   operator bool() const;

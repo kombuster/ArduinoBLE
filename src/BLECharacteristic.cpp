@@ -348,6 +348,13 @@ BLELocalCharacteristic* BLECharacteristic::local()
   return _local;
 }
 
+void BLECharacteristic::notify()
+{
+  if (_local) {
+    _local->notify();
+  }
+}
+
 void BLECharacteristic::setEventHandler(int event, BLECharacteristicEventHandler eventHandler)
 {
   if (_local) {

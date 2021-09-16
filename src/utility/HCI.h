@@ -65,6 +65,7 @@ public:
 
 
   virtual int sendAclPkt(uint16_t handle, uint8_t cid, uint8_t plen, void* data);
+  virtual int sendAclPktNoWait(uint16_t handle, uint8_t cid, uint8_t plen, void* data);
 
   virtual int disconnect(uint16_t handle);
 

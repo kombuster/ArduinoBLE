@@ -107,6 +107,10 @@ uint8_t BLELocalCharacteristic::operator[] (int offset) const
   return _value[offset];
 }
 
+void BLELocalCharacteristic::notify() {
+  ATT.handleNotifyNoWait(valueHandle(), _value, _valueLength);
+}
+
 int BLELocalCharacteristic::writeValue(const uint8_t value[], int length)
 {
   _valueLength = min(length, _valueSize);

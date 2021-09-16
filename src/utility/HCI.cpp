@@ -413,6 +413,34 @@ int HCIClass::leConnUpdate(uint16_t handle, uint16_t minInterval, uint16_t maxIn
   return sendCommand(OGF_LE_CTL << 10 | OCF_LE_CONN_UPDATE, sizeof(leConnUpdateData), &leConnUpdateData);
 }
 
+int HCIClass::sendAclPktNoWait(uint16_t handle, uint8_t cid, uint8_t plen, void* data)
+{
+  while (_pendingPkt >= _maxPkt) {
+    poll();
+  }
+
+  struct __attribute__ ((packed)) HCIACLHdr {
+    uint8_t pktType;
+    uint16_t handle;
+    uint16_t dlen;
+    uint16_t plen;
+    uint16_t cid;
+  } aclHdr = { HCI_ACLDATA_PKT, handle, uint8_t(plen + 4), plen, cid };
+
+  uint8_t txBuffer[sizeof(aclHdr) + plen];
+  memcpy(txBuffer, &aclHdr, sizeof(aclHdr));
+  memcpy(&txBuffer[sizeof(aclHdr)], data, plen);
+
+  if (_debug) {
+    dumpPkt("HCI ACLDATA TX -> ", sizeof(aclHdr) + plen, txBuffer);
+  }
+
+  // _pendingPkt++;
+  HCITransport.write(txBuffer, sizeof(aclHdr) + plen);
+
+  return 0;
+}
+
 int HCIClass::sendAclPkt(uint16_t handle, uint8_t cid, uint8_t plen, void* data)
 {
   while (_pendingPkt >= _maxPkt) {

@@ -510,6 +510,36 @@ BLEDevice ATTClass::central()
   return BLEDevice();
 }
 
+bool ATTClass::handleNotifyNoWait(uint16_t handle, const uint8_t* value, int length)
+{
+  int numNotifications = 0;
+
+  for (int i = 0; i < ATT_MAX_PEERS; i++) {
+    if (_peers[i].connectionHandle == 0xffff) {
+      continue;
+    }
+
+    uint8_t notification[_peers[i].mtu];
+    uint16_t notificationLength = 0;
+
+    notification[0] = ATT_OP_HANDLE_NOTIFY;
+    notificationLength++;
+
+    memcpy(&notification[1], &handle, sizeof(handle));
+    notificationLength += sizeof(handle);
+
+    length = min((uint16_t)(_peers[i].mtu - notificationLength), (uint16_t)length);
+    memcpy(&notification[notificationLength], value, length);
+    notificationLength += length;
+
+    HCI.sendAclPkt(_peers[i].connectionHandle, ATT_CID, notificationLength, notification);
+
+    numNotifications++;
+  }
+
+  return (numNotifications > 0);
+}
+
 bool ATTClass::handleNotify(uint16_t handle, const uint8_t* value, int length)
 {
   int numNotifications = 0;

@@ -53,7 +53,7 @@ public:
 
   bool written();
   bool subscribed();
-
+  void notify();
   void addDescriptor(BLEDescriptor& descriptor);
 
   void setEventHandler(BLECharacteristicEvent event, BLECharacteristicEventHandler eventHandler);
